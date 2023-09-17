@@ -11,10 +11,11 @@ const Header = styled.header`
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 20px;
+  padding: 40px;
 `;
 const Title = styled.h1`
   font-size: 30px;
+  font-weight: 600;
   color: ${(props) => props.theme.accentColor};
 `;
 
