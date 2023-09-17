@@ -8,12 +8,13 @@ const Container = styled.div`
   padding: 0 20px;
 `;
 const Header = styled.header`
-  height: 10vh;
   display: flex;
   justify-content: center;
   align-items: center;
+  padding: 20px;
 `;
 const Title = styled.h1`
+  font-size: 30px;
   color: ${(props) => props.theme.accentColor};
 `;
 
@@ -79,7 +80,7 @@ function Coins() {
         <CoinList>
           {coins.map((coin) => (
             <Coin key={coin.id}>
-              <Link to={`/${coin.id}`}>
+              <Link to={`/${coin.id}`} state={{ name: coin.name }}>
                 <Img
                   src={`https://cryptocurrencyliveprices.com/img/${coin.id}.png`}
                 />
