@@ -1,5 +1,5 @@
 import { useLocation, useParams } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import styled from "styled-components";
 
 const Container = styled.div`
@@ -29,18 +29,34 @@ interface RouterState {
 }
 
 function Coin() {
-  const [isLoading, setIsLoading] = useState(true);
   const { coinId } = useParams();
-
   // router v6부터 제네릭을 지원하지 않아서 쓰는 방법
   const { state } = useLocation() as RouterState;
+
+  const [isLoading, setIsLoading] = useState(true);
+  const [info, setInfo] = useState({});
+  const [price, setPrice] = useState({});
+
+  useEffect(() => {
+    (async () => {
+      const infoData = await (
+        await fetch(`https://api.coinpaprika.com/v1/coins/${coinId}`)
+      ).json();
+      const priceData = await (
+        await fetch(`https://api.coinpaprika.com/v1/tickers/${coinId}`)
+      ).json();
+
+      setInfo(infoData);
+      setPrice(priceData);
+    })();
+  }, []);
 
   return (
     <Container>
       <Header>
         <Title>{state?.name || "Loading"}</Title>
       </Header>
-      {isLoading ? <Loader>Loading...</Loader> : null}
+      {isLoading ? <Loader>Loading...</Loader> : <span>{info.hello}</span>}
     </Container>
   );
 }
