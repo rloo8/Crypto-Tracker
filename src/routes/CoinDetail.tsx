@@ -1,7 +1,8 @@
 import { useLocation, useParams, useMatch, Outlet } from "react-router-dom";
 import { Link } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useQuery } from "react-query";
 import styled from "styled-components";
+import { fetchCoinInfo } from "../api";
 
 // styled-components
 const Container = styled.div`
@@ -135,33 +136,25 @@ function CoinDetail() {
   // router v6부터 제네릭을 지원하지 않아서 쓰는 방법
   const { state } = useLocation() as IRouterState;
 
-  const [isLoading, setIsLoading] = useState(true);
-  const [info, setInfo] = useState<IInfoData>();
-  const [price, setPrice] = useState<IPriceData>();
-
   const priceMatch = useMatch("/:coinId/price");
   const chartMatch = useMatch("/:coinId/chart");
 
-  useEffect(() => {
-    (async () => {
-      const infoData = await (
-        await fetch(`https://api.coinpaprika.com/v1/coins/${coinId}`)
-      ).json();
-      const priceData = await (
-        await fetch(`https://api.coinpaprika.com/v1/tickers/${coinId}`)
-      ).json();
+  const { isLoading: infoLoading, data: infoData } = useQuery<IInfoData>(
+    ["info", coinId],
+    () => fetchCoinInfo(coinId)
+  );
+  const { isLoading: priceLoading, data: priceData } = useQuery<IPriceData>(
+    ["price", coinId],
+    () => fetchCoinInfo(coinId)
+  );
 
-      setInfo(infoData);
-      setPrice(priceData);
-      setIsLoading(false);
-    })();
-  }, [coinId]);
+  const isLoading = infoLoading || priceLoading;
 
   return (
     <Container>
       <Header>
         <Title>
-          {state?.name ? state.name : isLoading ? "Loading..." : info?.name}
+          {state?.name ? state.name : isLoading ? "Loading..." : infoData?.name}
         </Title>
       </Header>
       {isLoading ? (
@@ -171,28 +164,28 @@ function CoinDetail() {
           <Overview>
             <OverviewItem>
               <span>Rank: </span>
-              <span>{info?.rank}</span>
+              <span>{infoData?.rank}</span>
             </OverviewItem>
             <OverviewItem>
               <span>Symbol: </span>
-              <span>{info?.symbol}</span>
+              <span>{infoData?.symbol}</span>
             </OverviewItem>
             <OverviewItem>
               <span>Open Source: </span>
-              <span>{info?.open_source}</span>
+              <span>{infoData?.open_source}</span>
             </OverviewItem>
           </Overview>
 
-          <Discription>{info?.description}</Discription>
+          <Discription>{infoData?.description}</Discription>
 
           <Overview>
             <OverviewItem>
               <span>Total Suply:</span>
-              <span>{price?.total_supply}</span>
+              <span>{priceData?.total_supply}</span>
             </OverviewItem>
             <OverviewItem>
               <span>Max Supply:</span>
-              <span>{price?.max_supply}</span>
+              <span>{priceData?.max_supply}</span>
             </OverviewItem>
           </Overview>
 
