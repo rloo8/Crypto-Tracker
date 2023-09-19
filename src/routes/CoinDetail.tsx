@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { useQuery } from "react-query";
 import styled from "styled-components";
 import { fetchCoinInfo, fetchCoinPrice } from "../api";
+import { Helmet } from "react-helmet";
 
 // styled-components
 const Container = styled.div`
@@ -152,6 +153,11 @@ function CoinDetail() {
 
   return (
     <Container>
+      <Helmet>
+        <title>
+          {state?.name ? state.name : isLoading ? "Loading..." : infoData?.name}
+        </title>
+      </Helmet>
       <Header>
         <Title>
           {state?.name ? state.name : isLoading ? "Loading..." : infoData?.name}
@@ -172,7 +178,7 @@ function CoinDetail() {
             </OverviewItem>
             <OverviewItem>
               <span>Price: </span>
-              <span>{priceData?.quotes.USD.price.toFixed(2)}</span>
+              <span>${priceData?.quotes.USD.price.toFixed(2)}</span>
             </OverviewItem>
           </Overview>
 
