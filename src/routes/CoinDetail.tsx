@@ -2,7 +2,7 @@ import { useLocation, useParams, useMatch, Outlet } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { useQuery } from "react-query";
 import styled from "styled-components";
-import { fetchCoinInfo } from "../api";
+import { fetchCoinInfo, fetchCoinPrice } from "../api";
 
 // styled-components
 const Container = styled.div`
@@ -145,7 +145,7 @@ function CoinDetail() {
   );
   const { isLoading: priceLoading, data: priceData } = useQuery<IPriceData>(
     ["price", coinId],
-    () => fetchCoinInfo(coinId)
+    () => fetchCoinPrice(coinId)
   );
 
   const isLoading = infoLoading || priceLoading;
@@ -171,8 +171,8 @@ function CoinDetail() {
               <span>{infoData?.symbol}</span>
             </OverviewItem>
             <OverviewItem>
-              <span>Open Source: </span>
-              <span>{infoData?.open_source}</span>
+              <span>Price: </span>
+              <span>{priceData?.quotes.USD.price.toFixed(2)}</span>
             </OverviewItem>
           </Overview>
 
@@ -197,7 +197,7 @@ function CoinDetail() {
               <Link to={`/${coinId}/price`}>Price</Link>
             </Tab>
           </Tabs>
-          <Outlet />
+          <Outlet context={{ coinId }} />
         </>
       )}
     </Container>
